@@ -14,7 +14,7 @@ interface ScenesContextValue {
 
 const SceneContext = createContext<ScenesContextValue | null>(null)
 
-const useSceneContext = () => {
+export const useSceneContext = () => {
   const context = useContext(SceneContext)
 
   if (!context) {

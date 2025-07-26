@@ -6,14 +6,16 @@ export const MenuScene = () => {
     window.electron.ipcRenderer.send('close-app')
   }
 
-  const className = 'inline-block text-4xl p-3 m-3 w-96 uppercase border rounded-xl'
+  const className = 'inline-block text-4xl p-3 m-3 w-96 uppercase border border-slate-300/90 rounded-xl'
 
   return (
-    <div className="mt-48">
-      <h1 className="text-8xl mb-16 uppercase text-center">Teleturniej</h1>
+    <div className="pt-48 h-s">
+      <h1 className="text-7xl md:text-8xl mb-16 uppercase text-center text-indigo-100">Teleturniej</h1>
       <div className="flex flex-col content-center w-fit text-center m-auto">
-        <ButtonScene scene="game" className={clsx(className, 'bg-gray-400 text-blue-950')}>
-          Graj
+        <ButtonScene 
+        scene="game"
+        className={clsx(className, 'bg-gray-400 text-blue-950 hover:bg-gray-300/85')}>
+         🎮Graj
         </ButtonScene>
         <ButtonScene scene="questions" className={className}>
           Pytania
