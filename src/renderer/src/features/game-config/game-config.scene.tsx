@@ -1,199 +1,171 @@
-import { ButtonScene } from '@renderer/lib/react-scene'
 import { useState } from 'react'
+import clsx from 'clsx'
+import { useGameConfig } from '@renderer/lib/game-config'
+import { useSceneContext } from '@renderer/lib/react-scene'
 
-interface Props {
-  onStartGame: (players: string[], questionCount: number, answerTime: number) => void
+const getNameTeams = (teamCount: number) => {
+  return Array.from({ length: teamCount }, (_, i) => `Drużyna ${i + 1}`)
 }
 
-export const GameConfigScene = ({ onStartGame }: Props) => {
+export const GameConfigScene = () => {
   const [teamCount, setTeamCount] = useState(2)
-  const [teamNames, setTeamNames] = useState(['', ''])
-  const [questionCount, setQuestionCount] = useState(10)
-  const [customQuestionCount, setCustomQuestionCount] = useState<number | ''>('')
+  const [teamNames, setTeamNames] = useState(() => getNameTeams(teamCount))
+  const [maxRound, setMaxRound] = useState(10)
   const [answerTime, setAnswerTime] = useState(30)
+  const [chooseCategory, setChooseCategory] = useState(true)
+  const [countCategoriesToChoose, setCountCategoriesToChoose] = useState(3)
+  const { changeScene } = useSceneContext()
 
-  const handleTeamCountChange = (count: number) => {
-    setTeamCount(count)
-    setTeamNames((prev) => {
-      const newNames = [...prev]
-      while (newNames.length < count) newNames.push('')
-      return newNames.slice(0, count)
+  const { setConfig } = useGameConfig()
+
+  const changeCountTeamCount = (value: number) => {
+    setTeamCount(value)
+    setTeamNames(getNameTeams(value))
+  }
+
+  const changeChooseCategory = (value: boolean) => {
+    setChooseCategory(value)
+    setCountCategoriesToChoose((prev) => (value ? prev : 0))
+  }
+
+  const changeCountCategoriesToChoose = (value: number) => {
+    setCountCategoriesToChoose(Number.isNaN(value) ? 3 : value)
+  }
+
+  const changeMaxRound = (value: number) => {
+    setMaxRound(Number.isNaN(value) ? 10 : value)
+  }
+
+  const startGameHandler = () => {
+    setConfig({
+      maxRound,
+      countCategoriesToChoose,
+      timeToAnswer: answerTime,
+      teams: teamNames.map((name) => ({
+        name,
+        score: 0,
+        id: crypto.randomUUID()
+      }))
     })
-  }
 
-  const handleTeamNameChange = (index: number, value: string) => {
-    setTeamNames((prev) => {
-      const newNames = [...prev]
-      newNames[index] = value
-      return newNames
-    })
-  }
-
-  const handleQuestionCountChange = (value: number | '') => {
-    if (typeof value === 'number') {
-      setQuestionCount(value)
-      setCustomQuestionCount('')
-    } else {
-      setCustomQuestionCount('')
-    }
-  }
-
-  const handleCustomQuestionCountChange = (value: string) => {
-    const num = Number(value)
-    if (!value) {
-      setCustomQuestionCount('')
-      return
-    }
-    if (!isNaN(num) && num > 0) {
-      setCustomQuestionCount(num)
-      setQuestionCount(num)
-    }
-  }
-
-  const handleStart = () => {
-    if (teamNames.some((name) => name.trim() === '')) {
-      alert('Wprowadź nazwy wszystkich drużyn')
-      return
-    }
-    onStartGame(teamNames, questionCount, answerTime)
+    changeScene('game')
   }
 
   return (
-    <div className='relative min-h-screen p-2 md:p-6'>
-    <div
-      className="
-        max-w-3xl mx-auto p-8 rounded-xl shadow-lg ring-1 ring-gray-700
-        bg-[var(--color-background)] text-[var(--color-text)]
-      "
-    >
-      <h2 className="text-3xl font-semibold mb-10 tracking-wide">
-        Konfiguracja gry
-      </h2>
+    <div className="p-6 py-20">
+      <div className="w-4xl mx-auto p-10 rounded-xl ring-1 ring-gray-700">
+        <h1 className="text-6xl mb-20 tracking-wide text-center uppercase">Konfiguracja gry</h1>
 
-      {/* ---- Liczba drużyn ---- */}
-      <div className="mb-8">
-        <label className="block mb-3 text-lg font-medium tracking-wide">
-          Liczba drużyn
-        </label>
-        <select
-          className="
-            w-full rounded-md border border-gray-600 bg-[var(--color-background)] px-5 py-3
-            text-[var(--color-text)] text-lg transition
-            focus:outline-none focus:ring-4 focus:ring-indigo-500
-          "
-          value={teamCount}
-          onChange={(e) => handleTeamCountChange(Number(e.target.value))}
-        >
-          {[2, 3, 4, 5].map((num) => (
-            <option key={num} value={num} className="bg-[var(--color-background)] text-[var(--color-text)]">
-              {num}
-            </option>
+        {/* --- Liczba drużyn --- */}
+        <div className="flex content-center mb-6 gap-6">
+          <label className="block text-3xl">- Liczba drużyn:</label>
+          <div className="flex gap-4">
+            {[1, 2, 3, 4].map((number) => (
+              <button
+                key={number}
+                onClick={() => changeCountTeamCount(number)}
+                className={clsx('font-bold py-1.5 px-3.5 text-2xl rounded', {
+                  'bg-white text-blue-500': teamCount === number,
+                  'bg-blue-500 text-white hover:bg-blue-600': teamCount !== number
+                })}
+              >
+                {number}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* --- Nazwy drużyn --- */}
+        <div className="space-y-2 pl-12 mb-12">
+          {teamNames.map((name, index) => (
+            <div className="flex content-center mb-6 gap-6">
+              <label className="block text-xl pt-2">Nazwa drużyny {index + 1}:</label>
+              <input
+                key={index}
+                type="text"
+                placeholder={name}
+                defaultValue={name}
+                className="border border-gray-500 rounded-lg py-2 px-4 text-xl w-80"
+              />
+            </div>
           ))}
-        </select>
-      </div>
+        </div>
 
-      {/* ---- Nazwy drużyn ---- */}
-      <div className="mb-10 space-y-6">
-        {teamNames.slice(0, teamCount).map((name, i) => (
-          <div key={i}>
-            <label className="block mb-2 text-lg font-medium tracking-wide">
-              Nazwa drużyny {i + 1}
-            </label>
+        {/* --- Liczba pytań na drużynę --- */}
+        <div className="flex content-center mb-12 gap-6">
+          <label className="block text-3xl">- Liczba pytań na drużynę:</label>
+          <div className="flex gap-4">
             <input
-              type="text"
-              value={name}
-              onChange={(e) => handleTeamNameChange(i, e.target.value)}
-              placeholder={`Drużyna ${i + 1}`}
-              className="
-                w-full rounded-md border border-gray-600 bg-[var(--color-background)]
-                px-4 py-3 text-[var(--color-text)] text-lg placeholder:text-gray-500
-                transition focus:outline-none focus:ring-4 focus:ring-indigo-500
-              "
+              type="number"
+              className="border border-gray-500 rounded-lg py-2 px-4 text-xl w-22"
+              defaultValue={maxRound}
+              placeholder={maxRound.toString()}
+              onChange={(event) => changeMaxRound(event.target.valueAsNumber)}
             />
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* ---- Liczba pytań ---- */}
-      <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-10">
-        <div>
-          <label className="block mb-3 text-lg font-medium tracking-wide">
-            Liczba pytań
-          </label>
-          <select
-            className="
-              w-full rounded-md border border-gray-600 bg-[var(--color-background)] px-5 py-3
-              text-[var(--color-text)] text-lg transition
-              focus:outline-none focus:ring-4 focus:ring-indigo-500 disabled:opacity-60
-            "
-            value={customQuestionCount === '' ? questionCount : ''}
-            onChange={(e) => handleQuestionCountChange(Number(e.target.value))}
-            disabled={customQuestionCount !== ''}
-          >
-            {[10, 15, 20].map((num) => (
-              <option key={num} value={num} className="bg-[var(--color-background)] text-[var(--color-text)]">
-                {num}
-              </option>
+        {/* --- Czas na odpowiedź --- */}
+        <div className="flex content-center mb-12 gap-6">
+          <label className="block text-3xl">- Czas na odpowiedź:</label>
+          <div className="flex gap-4">
+            {[30, 60, 120, Infinity].map((number) => (
+              <button
+                key={number}
+                onClick={() => setAnswerTime(number)}
+                className={clsx('font-bold py-1.5 px-3.5 text-2xl rounded', {
+                  'bg-white text-blue-500': answerTime === number,
+                  'bg-blue-500 text-white hover:bg-blue-600': answerTime !== number
+                })}
+              >
+                {!Number.isFinite(number) ? 'Bez limitu' : `${number}s`}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
-        <div>
-          <label className="block mb-3 text-lg font-medium tracking-wide">
-            Lub wpisz własną
-          </label>
-          <input
-            type="number"
-            min={1}
-            value={customQuestionCount}
-            onChange={(e) => handleCustomQuestionCountChange(e.target.value)}
-            placeholder="Własna liczba pytań"
-            className="
-              w-full rounded-md border border-gray-600 bg-[var(--color-background)]
-              px-4 py-3 text-[var(--color-text)] text-lg placeholder:text-gray-500
-              transition focus:outline-none focus:ring-4 focus:ring-indigo-500
-            "
-          />
+        {/* --- Losowanie z lub bez kategorii --- */}
+        <div className="flex content-center mb-12 gap-6">
+          <label className="block text-3xl">- Czy losować kategorie:</label>
+          <div className="flex gap-4">
+            {[true, false].map((value, index) => (
+              <button
+                key={index}
+                onClick={() => changeChooseCategory(value)}
+                className={clsx('font-bold py-1.5 px-3.5 text-2xl rounded', {
+                  'bg-white text-blue-500': chooseCategory === value,
+                  'bg-blue-500 text-white hover:bg-blue-600': chooseCategory !== value
+                })}
+              >
+                {value ? 'Tak' : 'Nie'}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* ---- Czas na odpowiedź ----*/}
-      <div className="mb-12">
-        <label className="block mb-3 text-lg font-medium tracking-wide">
-          Czas na odpowiedź (sekundy)
-        </label>
-        <select
-          className="
-            w-full rounded-md border border-gray-600 bg-[var(--color-background)] px-5 py-3
-            text-[var(--color-text)] text-lg transition
-            focus:outline-none focus:ring-4 focus:ring-indigo-500
-          "
-          value={answerTime}
-          onChange={(e) => setAnswerTime(Number(e.target.value))}
-        >
-          {[30, 45, 60].map((sec) => (
-            <option key={sec} value={sec} className="bg-[var(--color-background)] text-[var(--color-text)]">
-              {sec} sekund
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <button
-        onClick={handleStart}
-        className="
-          w-full rounded-lg bg-indigo-600 py-4 text-lg font-semibold text-white shadow-md
-          transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-400
-        "
-      >
-        Start gry
-      </button>
-        <div className="absolute bottom-4 left-4">
-              <ButtonScene scene="menu" className="text-lg flex items-center gap-1 hover:text-indigo-100">
-                ↩ <span className="hidden sm:inline">Wróć</span>
-              </ButtonScene>
+        {/* --- Ilość kategorii do wybrania --- */}
+        {chooseCategory && (
+          <div className="flex content-center mb-12 gap-6">
+            <label className="block text-3xl">- Liczba kategorii od wybrania:</label>
+            <div className="flex gap-4">
+              <input
+                type="number"
+                defaultValue={countCategoriesToChoose}
+                onChange={(event) => changeCountCategoriesToChoose(event.target.valueAsNumber)}
+                placeholder={countCategoriesToChoose.toString()}
+                className="border border-gray-500 rounded-lg py-2 px-4 text-xl w-22"
+              />
             </div>
-    </div>
+          </div>
+        )}
+
+        <button
+          className="w-full rounded-lg py-4 text-2xl bg-blue-600 hover:bg-blue-700 font-bold mt-8"
+          onClick={startGameHandler}
+        >
+          Start gry
+        </button>
+      </div>
     </div>
   )
 }
