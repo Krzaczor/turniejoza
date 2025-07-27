@@ -1,22 +1,7 @@
-import { useEffect } from "react"
-import { useGame } from "@renderer/lib/game-provider"
-import { useSceneContext } from "@renderer/lib/react-scene" // <-- dodaj to!
+import { useGameConfig } from '@renderer/lib/game-config'
 
 export const GameScene = () => {
-  const { game } = useGame()
-  const { changeScene } = useSceneContext() 
+  const { config } = useGameConfig()
 
- console.log(game)
-
-
-  useEffect(() => {
-    const noPlayers = game.players.length === 0
-    const noQuestions = game.questions.length === 0
-
-    if (noPlayers || noQuestions) {
-      changeScene('game-config') 
-    }
-  }, [game, changeScene])
-
-  return <h1>GameScene</h1>
+  return <pre className="m-8 text-xl">{JSON.stringify(config, null, 4)}</pre>
 }
