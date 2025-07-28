@@ -41,6 +41,7 @@ export const GameConfigScene = () => {
       maxRound,
       countCategoriesToChoose,
       timeToAnswer: answerTime,
+        chooseCategory, // <== DODAJ TO
       teams: teamNames.map((name) => ({
         name,
         score: 0,
@@ -53,7 +54,7 @@ export const GameConfigScene = () => {
 
   return (
     <div className="p-6 py-20">
-      <div className="w-4xl mx-auto p-10 rounded-xl ring-1 ring-gray-700">
+      <div className="w-fit md:w-4xl mx-auto p-10 rounded-xl ring-1 ring-gray-700">
         <h1 className="text-6xl mb-20 tracking-wide text-center uppercase">Konfiguracja gry</h1>
 
         {/* --- Liczba drużyn --- */}
@@ -80,13 +81,17 @@ export const GameConfigScene = () => {
           {teamNames.map((name, index) => (
             <div className="flex content-center mb-6 gap-6">
               <label className="block text-xl pt-2">Nazwa drużyny {index + 1}:</label>
-              <input
-                key={index}
-                type="text"
-                placeholder={name}
-                defaultValue={name}
-                className="border border-gray-500 rounded-lg py-2 px-4 text-xl w-80"
-              />
+           <input
+  key={index}
+  type="text"
+  value={teamNames[index]}
+  onChange={(e) => {
+    const updated = [...teamNames]
+    updated[index] = e.target.value
+    setTeamNames(updated)
+  }}
+  className="border border-gray-500 rounded-lg py-2 px-4 text-xl w-80"
+/>
             </div>
           ))}
         </div>
