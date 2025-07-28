@@ -11,6 +11,7 @@ interface GameConfig {
   maxRound: number
   timeToAnswer: number
   countCategoriesToChoose: number
+  chooseCategory: boolean
 }
 
 interface GameConfigValue {
@@ -37,7 +38,7 @@ export const GameConfigProvider = ({ children }: GameConfigProps) => {
     countCategoriesToChoose: 0,
     teams: [],
     timeToAnswer: 30,
-    maxRound: 0
+    maxRound: 0,
   })
 
   return (
