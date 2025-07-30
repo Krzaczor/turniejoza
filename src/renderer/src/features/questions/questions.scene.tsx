@@ -2,6 +2,7 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import { useQuery } from '@tanstack/react-query'
 import { QuestionsList } from './components/questions-list/questions-list.component'
+import { useSceneContext } from '@renderer/lib/react-scene'
 
 const getCategories = async () => {
   return await window.api.categories.find()
@@ -9,6 +10,8 @@ const getCategories = async () => {
 
 export const QuestionsScene = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const { changeScene } = useSceneContext()
+
   const { data: categories, status: categoriesStatus } = useQuery<Category[]>({
     queryKey: ['categories'],
     queryFn: async () => await getCategories()
@@ -28,12 +31,8 @@ export const QuestionsScene = () => {
   }
 
   if (categories.length === 0) {
-    return (
-      <div className="flex max-h-[100vh]">
-        <p>Pusto, więc nic nie ma. Możesz zaimportować dane</p>
-        <input type="file" />
-      </div>
-    )
+    changeScene('questions-import')
+    return null
   }
 
   const changeActiveCategory = (id: string) => {

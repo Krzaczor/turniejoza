@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -9,6 +9,42 @@ import { createTableAnswers } from './features/answer/answer.schema'
 
 import { categoryService } from './features/category/category.service'
 import { questionService } from './features/question/question.service'
+
+import fs from 'node:fs/promises'
+import { formatFile } from './utils/format-file'
+import { answerService } from './features/answer/answer.service'
+
+interface AnswerData {
+  content: string
+  note: string
+  is_correct: boolean
+}
+
+interface QuestionDatas {
+  content: string
+  answers: AnswerData[]
+}
+
+const insertDatas = async (categoryName: string, datas: QuestionDatas[]) => {
+  const category = await categoryService.findOrCreate({ name: categoryName })
+
+  for (const data of datas) {
+    const result = await questionService.findByContent(data.content)
+
+    if (result) {
+      continue
+    }
+
+    const question = await questionService.create({
+      content: data.content,
+      category_id: category.id
+    })
+
+    for (const answer of data.answers) {
+      await answerService.create({ ...answer, question_id: question.id })
+    }
+  }
+}
 
 function createWindow(): void {
   // Create the browser window.
@@ -23,6 +59,30 @@ function createWindow(): void {
       sandbox: false
     },
     fullscreen: !is.dev
+  })
+
+  // upload pliku, formatowanie i wstawienie do bazy
+  ipcMain.on('open-file-dialog', (event) => {
+    dialog
+      .showOpenDialog(mainWindow, {
+        properties: ['openFile']
+      })
+      .then(async (result) => {
+        if (!result.canceled) {
+          const pathFile = result.filePaths[0]
+          const file = await fs.readFile(pathFile, 'utf-8')
+
+          const fileName = pathFile.split('/').slice(-1)[0].split('.')[0]
+          const datas = formatFile(file)
+
+          await insertDatas(fileName, datas)
+
+          event.reply('insert-success', datas)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -92,7 +152,7 @@ app.whenReady().then(async () => {
   await createTableQuestions().catch(console.log)
   await createTableAnswers().catch(console.log)
 
-  if (is.dev) {
+  if (is.dev === false) {
     const { insertMocks } = await import('./database/database.mock')
     await insertMocks().catch((error) => console.log(error))
   }

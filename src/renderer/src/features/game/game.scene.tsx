@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useGameConfig } from '@renderer/lib/game-config'
 import { useGameEngine } from '@renderer/lib/game-engine/useGameEngine'
 import { mockData } from '@renderer/constants'
-import { useSceneContext } from '@renderer/lib/react-scene'
+// import { useSceneContext } from '@renderer/lib/react-scene'
 
 interface Round {
   team: Team
@@ -11,7 +11,7 @@ interface Round {
 
 export const GameScene = () => {
   const { config } = useGameConfig()
-  const {changeScene} = useSceneContext()
+  // const { changeScene } = useSceneContext()
   const totalRounds = config.maxRound * config.teams.length
 
   const [roundIndex, setRoundIndex] = useState(0)
@@ -23,32 +23,23 @@ export const GameScene = () => {
   const currentRound = rounds[roundIndex]
   const currentQuestion = currentRound?.question
 
-  const correctAnswerIndex = currentQuestion?.answers.findIndex((a) => a.isCorrect) ?? 0
+  const correctAnswerIndex = currentQuestion?.answers.findIndex((a) => a.is_correct) ?? 0
 
-  const {
-    timeLeft,
-    selectedAnswer,
-    selectAnswer,
-    checkAnswer,
-    isAnswerChecked,
-    resetRound
-  } = useGameEngine({
-    correctAnswerIndex,
-    onRoundEnd: () => {
-      setTimeout(() => {
-        if (roundIndex + 1 >= totalRounds) {
-          alert('Gra zakończona! 🎉')
-          
-        } else {
-          setRoundIndex((i) => i + 1)
-          setSelectedCategory(null)
-          resetRound()
-        }
-      }, 2000)
-      
-    }
-    
-  })
+  const { timeLeft, selectedAnswer, selectAnswer, checkAnswer, isAnswerChecked, resetRound } =
+    useGameEngine({
+      correctAnswerIndex,
+      onRoundEnd: () => {
+        setTimeout(() => {
+          if (roundIndex + 1 >= totalRounds) {
+            alert('Gra zakończona! 🎉')
+          } else {
+            setRoundIndex((i) => i + 1)
+            setSelectedCategory(null)
+            resetRound()
+          }
+        }, 2000)
+      }
+    })
 
   // --- Krok 1: Inicjalizacja rund ---
   useEffect(() => {
@@ -120,15 +111,25 @@ export const GameScene = () => {
   }
 
   //  --- Krok 5: Placeholder ładowania pytań - widoczny tylko jeśli pytanie nie zostało jeszcze wylosowane -----
-  if (!currentQuestion) return <div className="p-10 gap-2 h-screen flex items-center justify-center"><span className='animate-spin'>⏳</span> <span className='text-indigo-100 font-medium animate-pulse'>Wczytywanie pytania...</span></div>
+  if (!currentQuestion)
+    return (
+      <div className="p-10 gap-2 h-screen flex items-center justify-center">
+        <span className="animate-spin">⏳</span>{' '}
+        <span className="text-indigo-100 font-medium animate-pulse">Wczytywanie pytania...</span>
+      </div>
+    )
 
   return (
     <div className="flex flex-col min-h-screen px-10 py-16 max-w-6xl mx-auto text-[var(--color-text)] bg-[var(--color-background)]">
       {/* --- Informacje o rundzie --- */}
       <div className="mb-10 text-center">
         <h2 className="text-2xl font-semibold mb-2">Tura : {currentTeam.name}</h2>
-        <p>Runda {Math.floor(roundIndex / config.teams.length) + 1} z {config.maxRound}</p>
-        {selectedCategory && <p className="text-lg mt-2 text-gray-400">Kategoria: {selectedCategory}</p>}
+        <p>
+          Runda {Math.floor(roundIndex / config.teams.length) + 1} z {config.maxRound}
+        </p>
+        {selectedCategory && (
+          <p className="text-lg mt-2 text-gray-400">Kategoria: {selectedCategory}</p>
+        )}
       </div>
 
       {/* Pytanie */}
@@ -141,13 +142,14 @@ export const GameScene = () => {
         {currentQuestion.answers.map((answer, index) => {
           const letter = String.fromCharCode(65 + index)
           const isSelected = selectedAnswer === index
-          const isThisCorrect = index === correctAnswerIndex
+          const isThis_correct = index === correctAnswerIndex
 
-          const baseStyle = 'flex items-center gap-5 p-6 rounded-xl border text-xl font-semibold transition-all duration-200 text-left'
+          const baseStyle =
+            'flex items-center gap-5 p-6 rounded-xl border text-xl font-semibold transition-all duration-200 text-left'
           let dynamicStyle = ''
 
           if (isAnswerChecked) {
-            if (isThisCorrect) {
+            if (isThis_correct) {
               dynamicStyle = 'bg-green-600 text-white border-green-500'
             } else if (isSelected) {
               dynamicStyle = 'bg-red-600 text-white border-red-500'
@@ -161,9 +163,7 @@ export const GameScene = () => {
           }
 
           const letterStyle =
-            isSelected && !isAnswerChecked
-              ? 'bg-white text-blue-700'
-              : 'bg-indigo-500 text-white'
+            isSelected && !isAnswerChecked ? 'bg-white text-blue-700' : 'bg-indigo-500 text-white'
 
           return (
             <button
@@ -172,7 +172,9 @@ export const GameScene = () => {
               disabled={isAnswerChecked}
               className={`${baseStyle} ${dynamicStyle}`}
             >
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${letterStyle}`}>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${letterStyle}`}
+              >
                 {letter}
               </div>
               <span>{answer.content}</span>
