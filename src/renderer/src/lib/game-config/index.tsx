@@ -39,6 +39,7 @@ export const GameConfigProvider = ({ children }: GameConfigProps) => {
     teams: [],
     timeToAnswer: 30,
     maxRound: 0,
+    chooseCategory: false
   })
 
   return (

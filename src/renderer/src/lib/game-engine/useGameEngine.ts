@@ -3,7 +3,7 @@ import { useGameConfig } from '@renderer/lib/game-config'
 
 interface UseGameEngineOptions {
   correctAnswerIndex: number
-  onRoundEnd?: (isCorrect: boolean) => void
+  onRoundEnd?: (is_correct: boolean) => void
 }
 
 export const useGameEngine = ({ correctAnswerIndex, onRoundEnd }: UseGameEngineOptions) => {
@@ -12,7 +12,7 @@ export const useGameEngine = ({ correctAnswerIndex, onRoundEnd }: UseGameEngineO
   const [timeLeft, setTimeLeft] = useState(config.timeToAnswer)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswerChecked, setIsAnswerChecked] = useState(false)
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
+  const [is_correct, setis_correct] = useState<boolean | null>(null)
 
   // Logika Timera rundy
   useEffect(() => {
@@ -31,30 +31,30 @@ export const useGameEngine = ({ correctAnswerIndex, onRoundEnd }: UseGameEngineO
   }, [timeLeft])
 
   const selectAnswer = (index: number) => {
-    if (isAnswerChecked){
+    if (isAnswerChecked) {
       return
     }
     setSelectedAnswer(index)
   }
 
   const checkAnswer = () => {
-    if (isAnswerChecked){
+    if (isAnswerChecked) {
       return
     }
 
-    const isCorrectAnswer = selectedAnswer === correctAnswerIndex
-    setIsCorrect(isCorrectAnswer)
+    const is_correctAnswer = selectedAnswer === correctAnswerIndex
+    setis_correct(is_correctAnswer)
     setIsAnswerChecked(true)
 
     if (onRoundEnd) {
-  onRoundEnd(isCorrectAnswer);
-}
+      onRoundEnd(is_correctAnswer)
+    }
   }
 
   const resetRound = () => {
     setSelectedAnswer(null)
     setIsAnswerChecked(false)
-    setIsCorrect(null)
+    setis_correct(null)
     setTimeLeft(config.timeToAnswer)
   }
 
@@ -63,7 +63,7 @@ export const useGameEngine = ({ correctAnswerIndex, onRoundEnd }: UseGameEngineO
     selectedAnswer,
     selectAnswer,
     checkAnswer,
-    isCorrect,
+    is_correct,
     isAnswerChecked,
     resetRound
   }
