@@ -13,7 +13,7 @@ interface Answer {
   id: string
   content: string
   note: string
-  isCorrect: boolean
+  is_correct: boolean
 }
 
 // baza
