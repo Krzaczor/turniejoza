@@ -4,9 +4,14 @@ import { useGameConfig } from '@renderer/lib/game-config'
 interface UseGameEngineOptions {
   correctAnswerIndex: number
   onRoundEnd?: (is_correct: boolean) => void
+  isActive?: boolean
 }
 
-export const useGameEngine = ({ correctAnswerIndex, onRoundEnd }: UseGameEngineOptions) => {
+export const useGameEngine = ({
+  correctAnswerIndex,
+  onRoundEnd,
+  isActive
+}: UseGameEngineOptions) => {
   const { config } = useGameConfig()
 
   const [timeLeft, setTimeLeft] = useState(config.timeToAnswer)
@@ -14,10 +19,15 @@ export const useGameEngine = ({ correctAnswerIndex, onRoundEnd }: UseGameEngineO
   const [isAnswerChecked, setIsAnswerChecked] = useState(false)
   const [is_correct, setis_correct] = useState<boolean | null>(null)
 
-  // Logika Timera rundy
+  // Lgoika timera rudyny
   useEffect(() => {
+    // zatrzymaj timer gdy nie wylosowano jeszcze pytania bądź zatrzymano czas
+    if (!isActive) return
+    // zatrzymaj timer gdy w konfiguratorze gry wybrano opcje rudn nie limitowanych czasem
     if (!Number.isFinite(config.timeToAnswer)) return
-
+    // zatrzymaj timer gdy udzielono odpowiedzi i została ona zatwierdzona
+    if (isAnswerChecked) return
+    // zatrzymaj timer gdy licznik czasu osiągnie wartość 0
     if (timeLeft <= 0) {
       checkAnswer()
       return
@@ -28,7 +38,7 @@ export const useGameEngine = ({ correctAnswerIndex, onRoundEnd }: UseGameEngineO
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [timeLeft])
+  }, [timeLeft, isAnswerChecked, isActive])
 
   const selectAnswer = (index: number) => {
     if (isAnswerChecked) {
