@@ -82,17 +82,21 @@ export const GameScene = () => {
 
   if (config.chooseCategory && !selectedCategory) {
     return (
-      <div className="p-10 text-center">
-        <h2 className="text-2xl mb-4">🎯 Tura: {currentTeam.name}</h2>
-        <p className="mb-6 text-xl">Wybierz kategorię:</p>
-        <div className="flex gap-6 justify-center flex-wrap">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background px-6">
+        <h2 className="text-4xl font-bold text-white mb-6">
+          🎯 Tura: <span className="text-blue-400">{currentTeam.name}</span>
+        </h2>
+        <p className="mb-8 text-xl text-gray-300">Wybierz kategorię:</p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
           {categoriesToChoose.map((category) => (
             <button
               key={category}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg text-xl font-semibold hover:bg-blue-700"
+              className="group relative bg-gray-800 rounded-2xl p-8 text-white text-xl font-semibold shadow-md hover:shadow-blue-500/50 transition transform hover:-translate-y-1 hover:scale-105 border border-gray-700"
               onClick={() => setSelectedCategory(category)}
             >
-              {category}
+              <span className="block">{category}</span>
+              <div className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-blue-400 transition" />
             </button>
           ))}
         </div>
@@ -120,7 +124,7 @@ export const GameScene = () => {
   }
 
   return (
-    <div className="relative flex flex-col min-h-screen px-10 py-16 max-w-6xl mx-auto">
+    <div className="relative flex flex-col min-h-screen px-10 pt-8 pb-10  max-w-6xl mx-auto">
       {/* Tabela wyników drużyn - fixed w lewym górnym rogu */}
       <div className="fixed top-4 left-4 bg-gray-900 bg-opacity-80 rounded-lg p-4 w-48 text-white shadow-lg z-50">
         <h3 className="text-xl font-bold mb-2 text-center">Wyniki drużyn</h3>
@@ -135,18 +139,18 @@ export const GameScene = () => {
       </div>
 
       {/* Informacje o turze */}
-      <div className="mb-10 text-center">
-        <h2 className="text-2xl font-semibold mb-2">Tura : {currentTeam.name}</h2>
-        <p>
-          Runda {Math.floor(roundIndex / config.teams.length) + 1} z {config.maxRound}
-        </p>
-        {selectedCategory && (
-          <p className="text-lg mt-2 text-gray-400">Kategoria: {selectedCategory}</p>
-        )}
+      <div className="mb-20 text-center">
+        <h2 className="text-2xl font-semibold mb-3">Tura : {currentTeam.name}</h2>
+        {/* Informacja o rundzie w prawym górnym rogu */}
+        <div className="fixed top-4 right-4 bg-gray-900 bg-opacity-80 text-white px-4 py-2 rounded-lg shadow-md text-lg z-50">
+          <span className="font-semibold">Runda:</span>{' '}
+          {Math.floor(roundIndex / config.teams.length) + 1} / {config.maxRound}
+        </div>
+        {selectedCategory && <p className="text-lg text-gray-400">Kategoria: {selectedCategory}</p>}
       </div>
 
       {/* Pytanie */}
-      <div className="text-4xl font-bold mb-24 leading-snug tracking-tight text-center">
+      <div className="text-4xl font-bold mb-28 leading-snug tracking-tight text-center">
         {currentQuestion.content}
       </div>
 
@@ -190,33 +194,37 @@ export const GameScene = () => {
       </div>
 
       {/* Kontrolki */}
-      <div className="mt-auto flex flex-col sm:flex-row items-center justify-between gap-6 pt-10 border-t border-gray-700 text-lg">
+      <div className="mt-auto flex flex-col sm:flex-row items-center justify-between gap-6 pt-10  text-lg">
         <button
           onClick={() => setIsGamePaused((prev) => !prev)}
-          className="hover:text-white font-medium px-5 py-3 rounded max-w-[160px] min-w-[160px] text-lg"
+          className={`hover:text-white font-medium px-5 py-3 rounded-lg max-w-[160px] min-w-[160px] text-lg border border-blue-200 ${isGamePaused && 'bg-blue-600 border-none'}`}
         >
-          {isGamePaused ? '▶️ Wznów' : '⏸️ Pauza'}
+          {isGamePaused ? 'Wznów' : ' Pauza'}
         </button>
-        <div className="text-4xl font-semibold">
-          ⏱️ {Number.isFinite(timeLeft) ? `${timeLeft}s` : '∞'}
+        <div className="text-4xl font-semibold flex items-center gap-2">
+          <span>⏱️</span>
+          <span className="font-mono tabular-nums w-16 text-center">
+            {Number.isFinite(timeLeft) ? `${timeLeft}s` : '∞'}
+          </span>
         </div>
         {!isAnswerChecked ? (
           <button
             onClick={checkAnswer}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-7 py-3 rounded-lg shadow-md transition disabled:opacity-50"
+            className="border border-indigo-300 hover:bg-blue-600 text-white font-semibold px-7 py-3 rounded-lg shadow-md transition disabled:opacity-50"
             disabled={selectedAnswer === null}
           >
-            ✅ Zatwierdź odpowiedź
+            Zatwierdź odpowiedź
           </button>
         ) : (
           <button
             onClick={goToNextRound}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3 rounded-lg shadow-md transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3 rounded-lg shadow-md transition min-w-[233px]"
           >
-            ▶️ Następna runda
+            Następna runda
           </button>
         )}
       </div>
+      <dvi className="h-24" />
     </div>
   )
 }
