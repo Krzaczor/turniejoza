@@ -1,5 +1,4 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
-import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
@@ -11,6 +10,7 @@ import { categoryService } from './features/category/category.service'
 import { questionService } from './features/question/question.service'
 
 import fs from 'node:fs/promises'
+import path from 'node:path'
 import { formatFile } from './utils/format-file'
 import { answerService } from './features/answer/answer.service'
 
@@ -55,7 +55,7 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false
     },
     fullscreen: !is.dev
@@ -72,7 +72,7 @@ function createWindow(): void {
           const pathFile = result.filePaths[0]
           const file = await fs.readFile(pathFile, 'utf-8')
 
-          const fileName = pathFile.split('/').slice(-1)[0].split('.')[0]
+          const fileName = path.parse(pathFile).name
           const datas = formatFile(file)
 
           await insertDatas(fileName, datas)
@@ -113,7 +113,7 @@ function createWindow(): void {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
 }
 
