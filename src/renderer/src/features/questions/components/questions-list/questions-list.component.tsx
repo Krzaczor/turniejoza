@@ -49,36 +49,26 @@ export const QuestionsList = ({ activeCategory }: QuestionsListProps) => {
   return (
     <>
       <h2 className="text-3xl font-bold mb-6">Pytania dla {category.name}</h2>
-      <ul className="space-y-6 min-w-full">
+      <ol className="space-y-2 min-w-full list-decimal list-inside text-xl">
         {questions.map(({ id, content, answers }) => (
-          <li key={id} className="p-6 rounded hover:bg-gray-900">
-            <div className="flex gap-6 mb-8">
-              <p className="content-center text-xl">{content}</p>
-              <button className="font-bold tracking-wide py-1.5 px-3.5 text-lg rounded bg-blue-600 text-white hover:bg-blue-700">
-                edytuj
-              </button>
-              <button className="font-bold tracking-wide py-1.5 px-3.5 text-lg rounded bg-red-600 text-white hover:bg-red-700">
-                usuń
-              </button>
-            </div>
-            <ul>
+          <li key={id} className="p-4 rounded-xl hover:bg-gray-900">
+            <span className="inline-block content-center mb-6 pl-2">{content}</span>
+            <ol className="list-[upper-alpha] list-inside">
               {answers.map((an) => (
                 <li
                   key={an.id}
-                  className={clsx('flex gap-6 p-3 text-lg rounded-xl hover:bg-gray-950', {
+                  className={clsx('py-2.5 px-4 text-lg rounded-xl', {
                     'border-2 border-blue-500': an.is_correct
                   })}
                 >
-                  <p className="flex-1 content-center">{an.content}</p>
-                  <button className="font-bold tracking-wide py-1.5 px-3.5 text-lg rounded bg-blue-600 text-white hover:bg-blue-700">
-                    edytuj
-                  </button>
+                  <span className="content-center font-bold ml-2">{an.content}</span>
+                  {an.note && <span className="pl-6">[ {an.note} ]</span>}
                 </li>
               ))}
-            </ul>
+            </ol>
           </li>
         ))}
-      </ul>
+      </ol>
     </>
   )
 }
