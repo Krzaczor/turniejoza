@@ -5,9 +5,6 @@ import { GameConfigScene } from './features/game-config/game-config.scene'
 import { GameScene } from './features/game/game.scene'
 import { GameEndScene } from './features/game-end/game-end.scene'
 import { QuestionsScene } from './features/questions/questions.scene'
-import { QuestionsImportScene } from './features/questions-import/questions-import.scene'
-import { QuestionsAddScene } from './features/questions-add/questions-add.scene'
-import { QuestionsAddSelfScene } from './features/questions-add-self/questions-add-self.scene'
 
 function App() {
   return (
@@ -31,15 +28,6 @@ function App() {
 
         {/* widok pytań i kategorii, tutaj jest też import i dodawanie pytań */}
         <Scene name="questions" element={<QuestionsScene />} />
-
-        {/* widok importu pytań (może być ich podgląd i zatwierdzenie) */}
-        <Scene name="questions-import" element={<QuestionsImportScene />} />
-
-        {/* widok formularza dodającego pytanie ręcznie */}
-        <Scene name="questions-add" element={<QuestionsAddScene />} />
-
-        {/* widok pola do dodawania pytań jakby to był plik */}
-        <Scene name="questions-add-self" element={<QuestionsAddSelfScene />} />
       </Scenes>
     </GameConfigProvider>
   )
