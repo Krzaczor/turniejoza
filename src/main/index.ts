@@ -96,10 +96,10 @@ function createWindow(): void {
 
   // Obsługa skrótów klawiszowych przez electron
   mainWindow.webContents.on('before-input-event', (event, input) => {
-    event.preventDefault()
-
     // alt+enter - przełacza między fullscreen, a okienkiem
     if (input.alt && input.key === 'Enter') {
+      event.preventDefault()
+
       if (mainWindow.isFullScreen()) {
         mainWindow.setFullScreen(false)
       } else {
