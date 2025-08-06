@@ -40,5 +40,9 @@ export const answerService = {
 
     const answer = await answerService.create(data)
     return answer
+  },
+
+  async removeByQuestion(id: string): Promise<void> {
+    await db(tables.answers).where('question_id', id).del()
   }
 }

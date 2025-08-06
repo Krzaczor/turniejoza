@@ -152,7 +152,7 @@ app.whenReady().then(async () => {
   await createTableQuestions().catch(console.log)
   await createTableAnswers().catch(console.log)
 
-  if (is.dev === false) {
+  if (is.dev) {
     const { insertMocks } = await import('./database/database.mock')
     await insertMocks().catch((error) => console.log(error))
   }
@@ -160,6 +160,9 @@ app.whenReady().then(async () => {
   ipcMain.handle('categories.find', () => categoryService.find())
   ipcMain.handle('categories.findOne', (_, id: string) => categoryService.findOne(id))
   ipcMain.handle('questions.findByCategory', (_, id: string) => questionService.findByCategory(id))
+  ipcMain.handle('questions.removeByCategory', (_, id: string) =>
+    questionService.removeByCategory(id)
+  )
 
   // -------
   // Tutaj kończą się nasze wypociny

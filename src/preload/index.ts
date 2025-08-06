@@ -8,9 +8,12 @@ const api = {
     findOne: (id: string) => ipcRenderer.invoke('categories.findOne', id)
   },
   questions: {
-    findByCategory: (id: string) => ipcRenderer.invoke('questions.findByCategory', id)
+    findByCategory: (id: string) => ipcRenderer.invoke('questions.findByCategory', id),
+    removeAll: (id: string) => ipcRenderer.invoke('questions.removeByCategory', id)
   }
 }
+
+export type Api = typeof api
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

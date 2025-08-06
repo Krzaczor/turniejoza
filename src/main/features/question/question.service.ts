@@ -18,7 +18,7 @@ export const questionService = {
     return ((await db(tables.questions).returning('*').insert(data)) as Question[])[0]
   },
 
-  async findByCategory<T>(id: string): Promise<T[]> {
+  async findByCategory(id: string): Promise<Question[]> {
     const questions = await db(tables.questions).select().where({ category_id: id })
 
     for (const q of questions) {
@@ -42,5 +42,15 @@ export const questionService = {
 
     const question = await questionService.create(data)
     return question
+  },
+
+  async removeByCategory(id: string): Promise<void> {
+    const questions = await questionService.findByCategory(id)
+
+    for (const question of questions) {
+      await answerService.removeByQuestion(question.id)
+    }
+
+    await db(tables.questions).where('category_id', id).del()
   }
 }
