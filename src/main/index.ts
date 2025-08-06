@@ -85,6 +85,25 @@ function createWindow(): void {
       })
   })
 
+  // export pliku txt w odpowiednim formacie
+  // - export pytań z konkretnej kategorii
+  ipcMain.on('export-questions', async (_, id: string) => {
+    const category = await categoryService.findOne(id)
+
+    if (!category) return
+
+    dialog.showSaveDialog({
+      title: 'Zapisz pytania',
+      defaultPath: `${category.name}.txt`,
+      filters: [
+        {
+          name: category.name,
+          extensions: ['txt']
+        }
+      ]
+    })
+  })
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
