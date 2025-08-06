@@ -8,18 +8,18 @@ const getCategories = async () => {
   return await window.api.categories.find()
 }
 
+export const useCategory = () => {
+  return useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: async () => await getCategories()
+  })
+}
+
 export const QuestionsScene = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const containerQuestionsRef = useRef<HTMLDivElement>(null!)
 
-  const {
-    data: categories,
-    status: categoriesStatus,
-    refetch
-  } = useQuery<Category[]>({
-    queryKey: ['categories'],
-    queryFn: async () => await getCategories()
-  })
+  const { data: categories, status: categoriesStatus, refetch } = useCategory()
 
   useEffect(() => {
     window.electron.ipcRenderer.on('insert-success', () => {

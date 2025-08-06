@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
+import { useEffect } from 'react'
 
 const getQuestionsByCategory = async (category_id: string) => {
   return await window.api.questions.findByCategory(category_id)
@@ -10,10 +11,20 @@ interface QuestionsListProps {
 }
 
 export const QuestionsList = ({ activeCategory }: QuestionsListProps) => {
-  const { data: questions, status: questionsStatus } = useQuery<Question[]>({
-    queryKey: ['categories', activeCategory],
+  const {
+    data: questions,
+    status: questionsStatus,
+    refetch
+  } = useQuery<Question[]>({
+    queryKey: ['questions', activeCategory],
     queryFn: () => getQuestionsByCategory(activeCategory)
   })
+
+  useEffect(() => {
+    window.electron.ipcRenderer.on('insert-success', () => {
+      refetch()
+    })
+  }, [])
 
   if (questionsStatus === 'pending') {
     return <QuestionsListLoader />
@@ -67,10 +78,22 @@ const QuestionsListError = () => {
 }
 
 const QuestionsListEmpty = () => {
+  const openUploadWindow = () => {
+    window.electron.ipcRenderer.send('open-file-dialog')
+  }
+
   return (
-    <div className="flex flex-col gap-3 text-xl">
-      <p>Brak pytań.</p>
-      <p>Zaimportuj pytania z pliku.</p>
+    <div className="text-xl space-y-6">
+      <div>
+        <p>Brak pytań.</p>
+        <p>Zaimportuj pytania z pliku.</p>
+      </div>
+      <button
+        className="font-bold py-2 px-4 text-lg rounded bg-blue-600 text-white hover:bg-blue-700"
+        onClick={openUploadWindow}
+      >
+        Dodaj pytania
+      </button>
     </div>
   )
 }
