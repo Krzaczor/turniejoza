@@ -182,6 +182,7 @@ app.whenReady().then(async () => {
   ipcMain.handle('questions.removeByCategory', (_, id: string) =>
     questionService.removeByCategory(id)
   )
+  ipcMain.handle('questions.count', () => questionService.count())
 
   // -------
   // Tutaj kończą się nasze wypociny

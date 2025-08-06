@@ -13,9 +13,27 @@ interface CreateQuestion {
   category_id: string
 }
 
+interface CountQuestions {
+  count: number
+}
+
 export const questionService = {
   async create(data: CreateQuestion): Promise<Question> {
     return ((await db(tables.questions).returning('*').insert(data)) as Question[])[0]
+  },
+
+  // async find(): Promise<Question[]> {
+  //   return await db(tables.questions).select()
+  // },
+
+  // async findOne(id: string): Promise<Question | null> {
+  //   const question = await db(tables.questions).where('id', id).first()
+  //   return question ? (question as Question) : null
+  // },
+
+  async count(): Promise<CountQuestions> {
+    const data = await db(tables.questions).count('id as count').first()
+    return { count: data ? +data.count : 0 }
   },
 
   async findByCategory(id: string): Promise<Question[]> {

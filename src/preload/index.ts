@@ -8,6 +8,9 @@ const api = {
     findOne: (id: string) => ipcRenderer.invoke('categories.findOne', id)
   },
   questions: {
+    // find: () => ipcRenderer.invoke('questions.find'),
+    // findOne: () => ipcRenderer.invoke('questions.findOne'),
+    count: () => ipcRenderer.invoke('questions.count'),
     findByCategory: (id: string) => ipcRenderer.invoke('questions.findByCategory', id),
     removeAll: (id: string) => ipcRenderer.invoke('questions.removeByCategory', id)
   }
