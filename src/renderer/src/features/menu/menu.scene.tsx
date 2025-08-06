@@ -1,5 +1,6 @@
 import { clsx } from 'clsx'
 import { ButtonScene } from '@renderer/lib/react-scene'
+import { useQuery } from '@tanstack/react-query'
 
 export const MenuScene = () => {
   const exitGamehandler = () => {
@@ -14,16 +15,7 @@ export const MenuScene = () => {
         Teleturniej
       </h1>
       <div className="flex flex-col content-center w-fit text-center m-auto">
-        <ButtonScene
-          scene="game-config"
-          className={clsx(
-            className,
-            'bg-gray-400 text-blue-950 hover:bg-gray-300/85 disabled:text-gray-400 disabled:bg-gray-600 disabled:cursor-not-allowed'
-          )}
-          disabled={false} // to będzie blokada jeśli baza z pytaniami jest pusta
-        >
-          Graj
-        </ButtonScene>
+        <ButtonPlayGame className={className} />
         <ButtonScene scene="questions" className={className}>
           Pytania
         </ButtonScene>
@@ -32,5 +24,36 @@ export const MenuScene = () => {
         </button>
       </div>
     </div>
+  )
+}
+
+const getCountQuestions = async () => {
+  return await window.api.questions.count()
+}
+
+interface ButtonPlayGameProps {
+  className: string
+}
+
+const ButtonPlayGame = ({ className }: ButtonPlayGameProps) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ['questions.count'],
+    queryFn: async () => await getCountQuestions()
+  })
+
+  const questionsNotExist = data ? data.count === 0 : false
+
+  return (
+    <ButtonScene
+      scene="game-config"
+      className={clsx(
+        className,
+        'bg-blue-600 text-white border-transparent hover:bg-blue-600/85',
+        'disabled:text-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed'
+      )}
+      disabled={isLoading || questionsNotExist}
+    >
+      Graj
+    </ButtonScene>
   )
 }

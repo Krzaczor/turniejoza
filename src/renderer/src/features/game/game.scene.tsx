@@ -80,23 +80,22 @@ export const GameScene = () => {
     })
   }, [selectedCategory, config.chooseCategory, currentTeam, roundIndex])
 
+  // widok wyboru kategorii
   if (config.chooseCategory && !selectedCategory) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background px-6">
-        <h2 className="text-4xl font-bold text-white mb-6">
-          🎯 Tura: <span className="text-blue-400">{currentTeam.name}</span>
+      <div className="pt-32 space-y-16">
+        <h2 className="text-6xl text-white text-center">
+          Kategorie dla <span className="text-blue-400">{currentTeam.name}</span>
         </h2>
-        <p className="mb-8 text-xl text-gray-300">Wybierz kategorię:</p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
+        <div className="flex flex-col gap-8 w-lg mx-auto">
           {categoriesToChoose.map((category) => (
             <button
               key={category}
-              className="group relative bg-gray-800 rounded-2xl p-8 text-white text-xl font-semibold shadow-md hover:shadow-blue-500/50 transition transform hover:-translate-y-1 hover:scale-105 border border-gray-700"
+              className="rounded-xl p-6 text-white text-3xl border-2 border-gray-600 hover:bg-blue-600 hover:border-blue-600"
               onClick={() => setSelectedCategory(category)}
             >
               <span className="block">{category}</span>
-              <div className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-blue-400 transition" />
             </button>
           ))}
         </div>
@@ -104,6 +103,7 @@ export const GameScene = () => {
     )
   }
 
+  // informacja o wczytywaniu pytania
   if (!currentQuestion) {
     return (
       <div className="p-10 gap-2 h-screen flex items-center justify-center">
@@ -123,6 +123,7 @@ export const GameScene = () => {
     }
   }
 
+  // widok pytań, odpowiedzi, przycisków, tabeli i informacji
   return (
     <div className="relative flex flex-col min-h-screen px-10 pt-8 pb-10  max-w-6xl mx-auto">
       {/* Tabela wyników drużyn - fixed w lewym górnym rogu */}
@@ -224,7 +225,6 @@ export const GameScene = () => {
           </button>
         )}
       </div>
-      <dvi className="h-24" />
     </div>
   )
 }
