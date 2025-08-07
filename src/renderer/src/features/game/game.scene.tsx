@@ -124,7 +124,7 @@ export const GameScene = () => {
   return (
     <div className="flex flex-col h-screen px-10 py-10 w-[1520px] mx-auto">
       {/* Tabela wyników drużyn w lewym górnym rogu */}
-      <div className="fixed top-6 left-6 bg-gray-900 rounded-lg p-4 w-50 text-white">
+      <div className="fixed top-10 left-10 bg-gray-900 rounded-lg p-4 w-50 text-white scale-120">
         <h3 className="text-xl font-bold mb-4 text-center">Wyniki drużyn</h3>
         <ul className="space-y-2">
           {config.teams.map((team) => (
@@ -140,7 +140,7 @@ export const GameScene = () => {
       <div className="mb-14 text-center">
         <h2 className="text-2xl">Tura: {currentTeam.name}</h2>
         {/* Informacja o rundzie w prawym górnym rogu */}
-        <div className="fixed top-6 right-6 bg-gray-900 text-white p-4 rounded-lg text-lg space-x-2">
+        <div className="fixed top-10 right-10 bg-gray-900 text-white p-4 rounded-lg text-lg space-x-2 scale-120">
           <span className="font-semibold">Runda:</span>
           <span>
             {Math.floor(roundIndex / config.teams.length) + 1} / {config.maxRound}

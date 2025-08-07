@@ -27,7 +27,7 @@ export const GameAnswers = ({
             key={answer.id}
             onClick={() => selectAnswer(idx)}
             disabled={isAnswerChecked}
-            className={clsx('relative p-6 rounded-lg border text-xl text-white text-left', {
+            className={clsx('relative p-6 rounded-lg border text-2xl text-white text-left', {
               'bg-green-950 border-green-950': isAnswerChecked && isCorrect,
               'bg-red-950 border-red-950': isAnswerChecked && isSelected && !isCorrect,
               'bg-blue-800 border-gray-400': isSelected,
@@ -37,7 +37,9 @@ export const GameAnswers = ({
             <div className="absolute text-2xl">{letter}</div>
             <div className="pl-10 space-y-2">
               <p>{answer.content}</p>
-              {answer.note && isAnswerChecked && <p className="text-lg">{answer.note}</p>}
+              {answer.note && isAnswerChecked && (
+                <p className="text-lg text-yellow-300">{answer.note}</p>
+              )}
             </div>
           </button>
         )
