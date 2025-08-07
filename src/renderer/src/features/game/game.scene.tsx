@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { mockData } from '@renderer/constants'
 import { useGameConfig } from '@renderer/lib/game-config'
 import { useGameEngine } from '@renderer/lib/game-engine/useGameEngine'
-import { mockData } from '@renderer/constants'
+import { GameControls } from './components/game-controls.component'
+import { GameAnswers } from './components/game-answers.component'
 
 interface Round {
   team: Team
@@ -105,12 +107,7 @@ export const GameScene = () => {
 
   // informacja o wczytywaniu pytania
   if (!currentQuestion) {
-    return (
-      <div className="p-10 gap-2 h-screen flex items-center justify-center">
-        <span className="animate-spin">⏳</span>
-        <span className="text-indigo-100 font-medium animate-pulse">Wczytywanie pytania...</span>
-      </div>
-    )
+    return null
   }
 
   const goToNextRound = () => {
@@ -125,106 +122,57 @@ export const GameScene = () => {
 
   // widok pytań, odpowiedzi, przycisków, tabeli i informacji
   return (
-    <div className="relative flex flex-col min-h-screen px-10 pt-8 pb-10  max-w-6xl mx-auto">
-      {/* Tabela wyników drużyn - fixed w lewym górnym rogu */}
-      <div className="fixed top-4 left-4 bg-gray-900 bg-opacity-80 rounded-lg p-4 w-48 text-white shadow-lg z-50">
-        <h3 className="text-xl font-bold mb-2 text-center">Wyniki drużyn</h3>
-        <ul className="space-y-1">
+    <div className="flex flex-col h-screen px-10 py-10 w-[1520px] mx-auto">
+      {/* Tabela wyników drużyn w lewym górnym rogu */}
+      <div className="fixed top-6 left-6 bg-gray-900 rounded-lg p-4 w-50 text-white">
+        <h3 className="text-xl font-bold mb-4 text-center">Wyniki drużyn</h3>
+        <ul className="space-y-2">
           {config.teams.map((team) => (
-            <li key={team.id} className="flex justify-between text-lg font-semibold">
+            <li key={team.id} className="flex justify-between text-lg">
               <span>{team.name}</span>
-              <span>{team.score ?? 0}</span>
+              <span>{team.score}</span>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Informacje o turze */}
-      <div className="mb-20 text-center">
-        <h2 className="text-2xl font-semibold mb-3">Tura : {currentTeam.name}</h2>
+      <div className="mb-14 text-center">
+        <h2 className="text-2xl">Tura: {currentTeam.name}</h2>
         {/* Informacja o rundzie w prawym górnym rogu */}
-        <div className="fixed top-4 right-4 bg-gray-900 bg-opacity-80 text-white px-4 py-2 rounded-lg shadow-md text-lg z-50">
-          <span className="font-semibold">Runda:</span>{' '}
-          {Math.floor(roundIndex / config.teams.length) + 1} / {config.maxRound}
+        <div className="fixed top-6 right-6 bg-gray-900 text-white p-4 rounded-lg text-lg space-x-2">
+          <span className="font-semibold">Runda:</span>
+          <span>
+            {Math.floor(roundIndex / config.teams.length) + 1} / {config.maxRound}
+          </span>
         </div>
-        {selectedCategory && <p className="text-lg text-gray-400">Kategoria: {selectedCategory}</p>}
       </div>
 
       {/* Pytanie */}
-      <div className="text-4xl font-bold mb-28 leading-snug tracking-tight text-center">
-        {currentQuestion.content}
+      <div className="text-4xl space-y-6 mb-14">
+        <p className="text-2xl">Kategoria: {selectedCategory}</p>
+        <p>{currentQuestion.content}</p>
       </div>
 
       {/* Odpowiedzi */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-20">
-        {currentQuestion.answers.map((answer, idx) => {
-          const letter = String.fromCharCode(65 + idx)
-          const isSel = selectedAnswer === idx
-          const isCorr = idx === correctAnswerIndex
-          const base = 'flex items-center gap-5 p-6 rounded-xl border text-xl font-semibold'
-          let dyn = ''
-          if (isAnswerChecked) {
-            dyn = isCorr
-              ? 'bg-green-600 text-white border-green-500'
-              : isSel
-                ? 'bg-red-600 text-white border-red-500'
-                : 'bg-[rgba(255,255,255,0.05)] border-gray-700 text-[var(--color-text)]'
-          } else {
-            dyn = isSel
-              ? 'bg-blue-600 text-white border-blue-500 shadow-lg'
-              : 'bg-[rgba(255,255,255,0.05)] text-[var(--color-text)] border-gray-600 hover:bg-[rgba(255,255,255,0.08)]'
-          }
-          const litSty =
-            isSel && !isAnswerChecked ? 'bg-white text-blue-700' : 'bg-indigo-500 text-white'
-          return (
-            <button
-              key={answer.id}
-              onClick={() => selectAnswer(idx)}
-              disabled={isAnswerChecked}
-              className={`${base} ${dyn} transition-all duration-200`}
-            >
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${litSty}`}
-              >
-                {letter}
-              </div>
-              <span>{answer.content}</span>
-            </button>
-          )
-        })}
-      </div>
+      <GameAnswers
+        isAnswerChecked={isAnswerChecked}
+        correctAnswerIndex={correctAnswerIndex}
+        currentQuestion={currentQuestion}
+        selectedAnswer={selectedAnswer}
+        selectAnswer={selectAnswer}
+      />
 
       {/* Kontrolki */}
-      <div className="mt-auto flex flex-col sm:flex-row items-center justify-between gap-6 pt-10  text-lg">
-        <button
-          onClick={() => setIsGamePaused((prev) => !prev)}
-          className={`hover:text-white font-medium px-5 py-3 rounded-lg max-w-[160px] min-w-[160px] text-lg border border-blue-200 ${isGamePaused && 'bg-blue-600 border-none'}`}
-        >
-          {isGamePaused ? 'Wznów' : ' Pauza'}
-        </button>
-        <div className="text-4xl font-semibold flex items-center gap-2">
-          <span>⏱️</span>
-          <span className="font-mono tabular-nums w-16 text-center">
-            {Number.isFinite(timeLeft) ? `${timeLeft}s` : '∞'}
-          </span>
-        </div>
-        {!isAnswerChecked ? (
-          <button
-            onClick={checkAnswer}
-            className="border border-indigo-300 hover:bg-blue-600 text-white font-semibold px-7 py-3 rounded-lg shadow-md transition disabled:opacity-50"
-            disabled={selectedAnswer === null}
-          >
-            Zatwierdź odpowiedź
-          </button>
-        ) : (
-          <button
-            onClick={goToNextRound}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3 rounded-lg shadow-md transition min-w-[233px]"
-          >
-            Następna runda
-          </button>
-        )}
-      </div>
+      <GameControls
+        timeLeft={timeLeft}
+        isAnswerChecked={isAnswerChecked}
+        isGamePaused={isGamePaused}
+        selectedAnswer={selectedAnswer}
+        goToNextRound={goToNextRound}
+        checkAnswer={checkAnswer}
+        setIsGamePaused={setIsGamePaused}
+      />
     </div>
   )
 }
