@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
 interface GameAnswersProps {
-  currentQuestion: Question
+  answers: Answer[]
   selectedAnswer: number | null
   correctAnswerIndex: number
   isAnswerChecked: boolean
@@ -9,23 +9,27 @@ interface GameAnswersProps {
 }
 
 export const GameAnswers = ({
-  currentQuestion,
+  answers,
   selectedAnswer,
   correctAnswerIndex,
   isAnswerChecked,
   selectAnswer
 }: GameAnswersProps) => {
+  // const data = shuffle(answers)
+  // const data = toShuffled(answers)
+  const data = answers
+
   return (
     <div className="flex flex-col space-y-6 mb-14">
-      {currentQuestion.answers.map((answer, idx) => {
-        const letter = String.fromCharCode(65 + idx)
-        const isSelected = selectedAnswer === idx
-        const isCorrect = idx === correctAnswerIndex
+      {data.map((answer, index) => {
+        const letter = String.fromCharCode(65 + index)
+        const isSelected = selectedAnswer === index
+        const isCorrect = index === correctAnswerIndex
 
         return (
           <button
             key={answer.id}
-            onClick={() => selectAnswer(idx)}
+            onClick={() => selectAnswer(index)}
             disabled={isAnswerChecked}
             className={clsx('relative p-6 rounded-lg border text-2xl text-white text-left', {
               'bg-green-950 border-green-950': isAnswerChecked && isCorrect,

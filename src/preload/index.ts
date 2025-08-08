@@ -13,6 +13,9 @@ const api = {
     count: () => ipcRenderer.invoke('questions.count'),
     findByCategory: (id: string) => ipcRenderer.invoke('questions.findByCategory', id),
     removeAll: (id: string) => ipcRenderer.invoke('questions.removeByCategory', id)
+  },
+  database: {
+    all: () => ipcRenderer.invoke('database.all')
   }
 }
 

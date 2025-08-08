@@ -1,12 +1,11 @@
 import { db } from '../../database/config'
 import { tables } from '../../database/consts'
 
-interface Answer {
+export interface Answer {
   id: string
   content: string
   note: string | null
   is_correct: boolean
-  question_id: string
 }
 
 interface CreateAnswer {
@@ -22,7 +21,14 @@ export const answerService = {
   },
 
   async findByQuestion(id: string): Promise<Answer[]> {
-    const answers = await db(tables.answers).select().where({ question_id: id })
+    const result = await db(tables.answers)
+      .select('id', 'content', 'is_correct', 'note')
+      .where({ question_id: id })
+
+    const answers = result.map((answer) => ({
+      ...answer,
+      is_correct: answer.is_correct === 1
+    }))
     return answers
   },
 

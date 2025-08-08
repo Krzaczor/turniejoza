@@ -13,6 +13,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { formatFile } from './utils/format-file'
 import { answerService } from './features/answer/answer.service'
+import { databaseService } from './features/database/database.service'
 
 interface AnswerData {
   content: string
@@ -37,7 +38,7 @@ const insertDatas = async (categoryName: string, datas: QuestionDatas[]) => {
 
     const question = await questionService.create({
       content: data.content,
-      category_id: category.id
+      category: category.id
     })
 
     for (const answer of data.answers) {
@@ -176,6 +177,7 @@ app.whenReady().then(async () => {
     await insertMocks().catch((error) => console.log(error))
   }
 
+  ipcMain.handle('database.all', () => databaseService.all())
   ipcMain.handle('categories.find', () => categoryService.find())
   ipcMain.handle('categories.findOne', (_, id: string) => categoryService.findOne(id))
   ipcMain.handle('questions.findByCategory', (_, id: string) => questionService.findByCategory(id))

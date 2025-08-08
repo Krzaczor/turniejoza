@@ -8,7 +8,7 @@ export const createTableQuestions = async () => {
     await db.schema.createTable(tables.questions, (table) => {
       table.uuid('id').primary().defaultTo(db.fn.uuid())
       table.string('content').notNullable()
-      table.uuid('category_id').references('id').inTable(tables.categories).onDelete('CASCADE')
+      table.uuid('category').references('id').inTable(tables.categories).onDelete('CASCADE')
     })
   }
 }

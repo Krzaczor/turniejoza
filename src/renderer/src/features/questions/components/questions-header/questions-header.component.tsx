@@ -8,8 +8,8 @@ const removeQuestions = async (id: string) => {
   return await window.api.questions.removeAll(id)
 }
 
-const getQuestionsByCategory = async (category_id: string) => {
-  return await window.api.questions.findByCategory(category_id)
+const getQuestionsByCategory = async (category: string) => {
+  return await window.api.questions.findByCategory(category)
 }
 
 interface QuestionsHeaderProps {

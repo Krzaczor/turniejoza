@@ -12,7 +12,7 @@ interface Category {
 interface Answer {
   id: string
   content: string
-  note: string
+  note: string | null
   is_correct: boolean
 }
 

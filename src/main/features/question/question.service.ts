@@ -1,16 +1,17 @@
 import { db } from '../../database/config'
 import { tables } from '../../database/consts'
-import { answerService } from '../answer/answer.service'
+import { Answer, answerService } from '../answer/answer.service'
 
-interface Question {
+export interface Question {
   id: string
   content: string
-  category_id: string
+  category: string
+  answers: Answer[]
 }
 
 interface CreateQuestion {
   content: string
-  category_id: string
+  category: string
 }
 
 interface CountQuestions {
@@ -22,9 +23,15 @@ export const questionService = {
     return ((await db(tables.questions).returning('*').insert(data)) as Question[])[0]
   },
 
-  // async find(): Promise<Question[]> {
-  //   return await db(tables.questions).select()
-  // },
+  async find(): Promise<Question[]> {
+    const questions = await db(tables.questions).select()
+
+    for (const q of questions) {
+      q.answers = await answerService.findByQuestion(q.id)
+    }
+
+    return questions
+  },
 
   // async findOne(id: string): Promise<Question | null> {
   //   const question = await db(tables.questions).where('id', id).first()
@@ -37,7 +44,7 @@ export const questionService = {
   },
 
   async findByCategory(id: string): Promise<Question[]> {
-    const questions = await db(tables.questions).select().where({ category_id: id })
+    const questions = await db(tables.questions).select().where({ category: id })
 
     for (const q of questions) {
       q.answers = await answerService.findByQuestion(q.id)
@@ -69,6 +76,6 @@ export const questionService = {
       await answerService.removeByQuestion(question.id)
     }
 
-    await db(tables.questions).where('category_id', id).del()
+    await db(tables.questions).where('category', id).del()
   }
 }
