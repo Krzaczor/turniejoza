@@ -29,7 +29,8 @@
     "electron-updater": "6.3.9",
     "knex": "3.1.0",
     "sqlite3": "5.1.7",
-    "tailwindcss": "4.1.11"
+    "tailwindcss": "4.1.11",
+    "zod": "4.0.15"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "3.0.0",

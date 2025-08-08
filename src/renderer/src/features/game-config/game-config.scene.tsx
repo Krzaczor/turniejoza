@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import clsx from 'clsx'
 import { useGameConfig } from '@renderer/lib/game-config'
-import { useSceneContext } from '@renderer/lib/react-scene'
+import { ButtonScene, useSceneContext } from '@renderer/lib/react-scene'
 
 const getNameTeams = (teamCount: number) => {
   return Array.from({ length: teamCount }, (_, i) => `Drużyna ${i + 1}`)
@@ -53,7 +53,7 @@ export const GameConfigScene = () => {
   }
 
   return (
-    <div className="p-6 py-20">
+    <div className="p-6 pt-20">
       <div className="w-fit md:w-4xl mx-auto p-10 rounded-xl ring-1 ring-gray-700">
         <h1 className="text-6xl mb-20 tracking-wide text-center uppercase">Konfiguracja gry</h1>
 
@@ -114,9 +114,9 @@ export const GameConfigScene = () => {
         <div className="flex content-center mb-12 gap-6">
           <label className="block text-3xl">- Czas na odpowiedź:</label>
           <div className="flex gap-4">
-            {[30, 60, 120, Infinity].map((number) => (
+            {[30, 60, 120, Infinity].map((number, index) => (
               <button
-                key={number}
+                key={index}
                 onClick={() => setAnswerTime(number)}
                 className={clsx('font-bold py-1.5 px-3.5 text-2xl rounded', {
                   'bg-white text-blue-500': answerTime === number,
@@ -164,12 +164,20 @@ export const GameConfigScene = () => {
           </div>
         )}
 
-        <button
-          className="w-full rounded-lg py-4 text-2xl bg-blue-600 hover:bg-blue-700 font-bold mt-8"
-          onClick={startGameHandler}
-        >
-          Start gry
-        </button>
+        <div className="flex gap-4">
+          <ButtonScene
+            scene="menu"
+            className="flex-1/3 rounded-lg py-4 text-2xl border border-gray-600 font-bold mt-8"
+          >
+            Wróć do menu
+          </ButtonScene>
+          <button
+            className="flex-2/3 rounded-lg py-4 text-2xl bg-blue-600 hover:bg-blue-700 font-bold mt-8"
+            onClick={startGameHandler}
+          >
+            Rozpocznij grę
+          </button>
+        </div>
       </div>
     </div>
   )

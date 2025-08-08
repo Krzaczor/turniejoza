@@ -1,7 +1,7 @@
 import { db } from '../../database/config'
 import { tables } from '../../database/consts'
 
-interface Category {
+export interface Category {
   id: string
   name: string
 }

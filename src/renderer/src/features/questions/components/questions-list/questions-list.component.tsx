@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { useEffect } from 'react'
 
-const getQuestionsByCategory = async (category_id: string) => {
-  return await window.api.questions.findByCategory(category_id)
+const getQuestionsByCategory = async (category: string) => {
+  return await window.api.questions.findByCategory(category)
 }
 
 interface QuestionsListProps {

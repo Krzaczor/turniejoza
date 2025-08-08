@@ -15,23 +15,23 @@ export const insertMocks = async () => {
     const categories = await db(tables.categories).select('*')
 
     const questionsData = [
-      { content: 'Co to jest JavaScript?', category_id: categories[0].id }, // Technologia
-      { content: 'Jakie są różnice między HTML a CSS?', category_id: categories[0].id },
-      { content: 'Czym jest programowanie obiektowe?', category_id: categories[0].id },
-      { content: 'Jak działa silnik JavaScript?', category_id: categories[0].id },
-      { content: 'Co to jest framework?', category_id: categories[0].id },
+      { content: 'Co to jest JavaScript?', category: categories[0].id }, // Technologia
+      { content: 'Jakie są różnice między HTML a CSS?', category: categories[0].id },
+      { content: 'Czym jest programowanie obiektowe?', category: categories[0].id },
+      { content: 'Jak działa silnik JavaScript?', category: categories[0].id },
+      { content: 'Co to jest framework?', category: categories[0].id },
 
-      { content: 'Czym jest teoria względności?', category_id: categories[1].id }, // Nauka
-      { content: 'Jakie są podstawowe zasady fizyki kwantowej?', category_id: categories[1].id },
-      { content: 'Co to jest DNA?', category_id: categories[1].id },
-      { content: 'Jak działa fotosynteza?', category_id: categories[1].id },
-      { content: 'Czym jest czarna dziura?', category_id: categories[1].id },
+      { content: 'Czym jest teoria względności?', category: categories[1].id }, // Nauka
+      { content: 'Jakie są podstawowe zasady fizyki kwantowej?', category: categories[1].id },
+      { content: 'Co to jest DNA?', category: categories[1].id },
+      { content: 'Jak działa fotosynteza?', category: categories[1].id },
+      { content: 'Czym jest czarna dziura?', category: categories[1].id },
 
-      { content: 'Czym jest impresjonizm?', category_id: categories[2].id }, // Sztuka
-      { content: 'Jakie są cechy sztuki nowoczesnej?', category_id: categories[2].id },
-      { content: 'Kto jest autorem Mona Lisy?', category_id: categories[2].id },
-      { content: 'Czym jest sztuka abstrakcyjna?', category_id: categories[2].id },
-      { content: 'Jakie są różnice między rzeźbą a malarstwem?', category_id: categories[2].id }
+      { content: 'Czym jest impresjonizm?', category: categories[2].id }, // Sztuka
+      { content: 'Jakie są cechy sztuki nowoczesnej?', category: categories[2].id },
+      { content: 'Kto jest autorem Mona Lisy?', category: categories[2].id },
+      { content: 'Czym jest sztuka abstrakcyjna?', category: categories[2].id },
+      { content: 'Jakie są różnice między rzeźbą a malarstwem?', category: categories[2].id }
     ]
 
     await db(tables.questions).insert(questionsData)

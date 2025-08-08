@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGameConfig } from '@renderer/lib/game-config'
 
 interface UseGameEngineOptions {
@@ -17,7 +17,6 @@ export const useGameEngine = ({
   const [timeLeft, setTimeLeft] = useState(config.timeToAnswer)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswerChecked, setIsAnswerChecked] = useState(false)
-  const [is_correct, setis_correct] = useState<boolean | null>(null)
 
   // Lgoika timera rudyny
   useEffect(() => {
@@ -53,7 +52,6 @@ export const useGameEngine = ({
     }
 
     const is_correctAnswer = selectedAnswer === correctAnswerIndex
-    setis_correct(is_correctAnswer)
     setIsAnswerChecked(true)
 
     if (onRoundEnd) {
@@ -64,7 +62,6 @@ export const useGameEngine = ({
   const resetRound = () => {
     setSelectedAnswer(null)
     setIsAnswerChecked(false)
-    setis_correct(null)
     setTimeLeft(config.timeToAnswer)
   }
 
@@ -73,7 +70,6 @@ export const useGameEngine = ({
     selectedAnswer,
     selectAnswer,
     checkAnswer,
-    is_correct,
     isAnswerChecked,
     resetRound
   }
