@@ -23,17 +23,24 @@ export const GameConfigScene = () => {
     setTeamNames(getNameTeams(value))
   }
 
+  const changeTeamName = (name: string, index: number) => {
+    const updated = [...teamNames]
+    updated[index] = name
+    setTeamNames(updated)
+  }
+
   const changeChooseCategory = (value: boolean) => {
     setChooseCategory(value)
-    setCountCategoriesToChoose((prev) => (value ? prev : 0))
+    setCountCategoriesToChoose(() => (value ? 3 : 0))
   }
 
   const changeCountCategoriesToChoose = (value: number) => {
-    setCountCategoriesToChoose(Number.isNaN(value) ? 3 : value)
+    setCountCategoriesToChoose(Number.isNaN(value) || value < 2 ? 3 : value)
   }
 
   const changeMaxRound = (value: number) => {
-    setMaxRound(Number.isNaN(value) ? 10 : value)
+    console.log('changeMaxRound', value)
+    setMaxRound(Number.isNaN(value) || value === 0 ? 10 : value)
   }
 
   const startGameHandler = () => {
@@ -42,8 +49,8 @@ export const GameConfigScene = () => {
       countCategoriesToChoose,
       timeToAnswer: answerTime,
       chooseCategory, // <== DODAJ TO
-      teams: teamNames.map((name) => ({
-        name,
+      teams: teamNames.map((name, index) => ({
+        name: name.trim() !== '' ? name.trim() : `Drużyna ${index + 1}`,
         score: 0,
         id: crypto.randomUUID()
       }))
@@ -84,12 +91,11 @@ export const GameConfigScene = () => {
               <input
                 key={index}
                 type="text"
+                placeholder={name}
+                defaultValue={name}
                 value={name}
-                onChange={(e) => {
-                  const updated = [...teamNames]
-                  updated[index] = e.target.value
-                  setTeamNames(updated)
-                }}
+                maxLength={15}
+                onChange={(event) => changeTeamName(event.target.value, index)}
                 className="border border-gray-500 rounded-lg py-2 px-4 text-xl w-80"
               />
             </div>
