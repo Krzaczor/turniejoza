@@ -150,6 +150,8 @@ export const GameScene = withDatabse(({ data }) => {
   }
 
   const goToNextRound = () => {
+    setIsGamePaused(true)
+
     if (roundIndex + 1 >= totalRounds) {
       changeScene('game-end')
     } else {
