@@ -55,14 +55,10 @@ function getSegments<T>(array: T[], segmentLength: number) {
 }
 
 const formatAnswerContent = (text: string) => {
-  const startIndex = text.indexOf('[')
-  const endIndex = text.indexOf(']')
+  const [beforeBrackets, insideBrackets = null] = text.split('[')
 
-  const beforeBrackets = text.slice(0, startIndex).trim()
-  const insideBrackets = text.slice(startIndex + 1, endIndex).trim()
+  const content = beforeBrackets.trim()
+  const note = insideBrackets && insideBrackets.replace(']', '').trim()
 
-  return {
-    content: beforeBrackets,
-    note: beforeBrackets === insideBrackets ? null : insideBrackets
-  } as const
+  return { content, note } as const
 }
