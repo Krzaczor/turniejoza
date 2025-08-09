@@ -35,7 +35,7 @@ export const GameControls = ({
         )}
         disabled={isAnswerChecked || !Number.isFinite(timeLeft)}
       >
-        {isGamePaused ? 'Wznów odliczanie' : ' Zatrzymaj czas'}
+        {isGamePaused ? 'Odliczanie' : 'Zatrzymaj czas'}
       </button>
       <div
         className={clsx('text-4xl text-center pt-2.5', {
