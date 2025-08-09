@@ -163,7 +163,7 @@ export const GameScene = withDatabse(({ data }) => {
 
   // widok pytań, odpowiedzi, przycisków, tabeli i informacji
   return (
-    <div className="flex flex-col h-screen px-10 py-10 w-[1520px] mx-auto">
+    <div className="flex flex-col h-screen px-10 py-10">
       {/* Tabela wyników drużyn w lewym górnym rogu */}
       <div className="fixed top-10 left-10 bg-gray-900 rounded-lg p-4 w-50 text-white scale-120">
         <h3 className="text-xl font-bold mb-4 text-center">Wyniki drużyn</h3>
@@ -189,7 +189,7 @@ export const GameScene = withDatabse(({ data }) => {
       </div>
 
       {/* Pytanie */}
-      <div className="text-4xl space-y-6 mb-14">
+      <div className="text-4xl space-y-6 mb-14 ml-72">
         <p className="text-2xl">
           Kategoria: {data.categories.find((c) => c.id === currentQuestion.category)?.name}
         </p>
