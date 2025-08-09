@@ -66,19 +66,24 @@ function createWindow(): void {
   ipcMain.on('open-file-dialog', (event) => {
     dialog
       .showOpenDialog(mainWindow, {
-        properties: ['openFile']
+        properties: ['multiSelections']
       })
       .then(async (result) => {
         if (!result.canceled) {
-          const pathFile = result.filePaths[0]
-          const file = await fs.readFile(pathFile, 'utf-8')
+          for (const pathFile of result.filePaths) {
+            const { name, ext } = path.parse(pathFile)
 
-          const fileName = path.parse(pathFile).name
-          const datas = formatFile(file)
+            if (ext !== '.txt') {
+              continue
+            }
 
-          await insertDatas(fileName, datas)
+            const file = await fs.readFile(pathFile, 'utf-8')
+            const datas = formatFile(file)
 
-          event.reply('insert-success', datas)
+            await insertDatas(name, datas)
+          }
+
+          event.reply('insert-success')
         }
       })
       .catch((err) => {
