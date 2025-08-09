@@ -19,7 +19,7 @@ export const GameScene = withDatabse(({ data }) => {
   const { config, setConfig } = useGameConfig()
   const totalRounds = config.maxRound * config.teams.length
 
-  const [isGamePaused, setIsGamePaused] = useState(false)
+  const [isGamePaused, setIsGamePaused] = useState(true)
   const [roundIndex, setRoundIndex] = useState(0)
   const [rounds, setRounds] = useState<Round[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -108,7 +108,7 @@ export const GameScene = withDatabse(({ data }) => {
       upd[roundIndex] = { team: currentTeam, question }
       return upd
     })
-  }, [selectedCategory, currentTeam, roundIndex])
+  }, [selectedCategory, currentTeam.id, roundIndex])
 
   const { timeLeft, selectedAnswer, selectAnswer, checkAnswer, isAnswerChecked, resetRound } = game
 
@@ -150,6 +150,8 @@ export const GameScene = withDatabse(({ data }) => {
   }
 
   const goToNextRound = () => {
+    setIsGamePaused(true)
+
     if (roundIndex + 1 >= totalRounds) {
       changeScene('game-end')
     } else {
