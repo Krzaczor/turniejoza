@@ -108,7 +108,7 @@ export const GameScene = withDatabse(({ data }) => {
       upd[roundIndex] = { team: currentTeam, question }
       return upd
     })
-  }, [selectedCategory, currentTeam, roundIndex])
+  }, [selectedCategory, currentTeam.id, roundIndex])
 
   const { timeLeft, selectedAnswer, selectAnswer, checkAnswer, isAnswerChecked, resetRound } = game
 
