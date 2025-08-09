@@ -20,7 +20,7 @@ export const GameAnswers = ({
   const data = answers
 
   return (
-    <div className="flex flex-col space-y-6 mb-14">
+    <div className="flex flex-col space-y-6 mb-14 ml-72">
       {data.map((answer, index) => {
         const letter = String.fromCharCode(65 + index)
         const isSelected = selectedAnswer === index
