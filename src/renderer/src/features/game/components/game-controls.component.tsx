@@ -63,13 +63,7 @@ export const GameControls = ({
           Następna runda
         </button>
       )}
-      <div className="fixed bottom-14 left-14 w-48 flex flex-col gap-4">
-        <ButtonScene
-          scene="game-config"
-          className="px-6 py-4 rounded-lg text-white text-xl border border-gray-500 hover:bg-blue-950"
-        >
-          Konfigurator
-        </ButtonScene>
+      <div className="fixed bottom-14 left-14 w-48">
         <ButtonScene
           scene="menu"
           className="px-6 py-4 rounded-lg text-white text-xl border border-gray-500 hover:bg-blue-950"
