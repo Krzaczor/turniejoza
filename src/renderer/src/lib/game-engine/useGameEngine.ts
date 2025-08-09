@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
 import { useGameConfig } from '@renderer/lib/game-config'
+import { useEffect, useRef, useState } from 'react'
 
 interface UseGameEngineOptions {
   correctAnswerIndex: number
@@ -18,38 +18,64 @@ export const useGameEngine = ({
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswerChecked, setIsAnswerChecked] = useState(false)
 
-  // Lgoika timera rudyny
+  const roundStartRef = useRef<number | null>(null)
+  const timerRef = useRef<number | null>(null)
+  const pausedTimeRef = useRef<number | null>(null)
+
   useEffect(() => {
-    // zatrzymaj timer gdy nie wylosowano jeszcze pytania bądź zatrzymano czas
-    if (!isActive) return
-    // zatrzymaj timer gdy w konfiguratorze gry wybrano opcje rudn nie limitowanych czasem
-    if (!Number.isFinite(config.timeToAnswer)) return
-    // zatrzymaj timer gdy udzielono odpowiedzi i została ona zatwierdzona
-    if (isAnswerChecked) return
-    // zatrzymaj timer gdy licznik czasu osiągnie wartość 0
-    if (timeLeft <= 0) {
-      checkAnswer()
+    if (!isActive) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      timerRef.current = null
+      pausedTimeRef.current = timeLeft
+      roundStartRef.current = null
       return
     }
 
-    const timer = setTimeout(() => {
-      setTimeLeft((prev) => prev - 1)
-    }, 1000)
+    if (!Number.isFinite(config.timeToAnswer)) {
+      setTimeLeft(config.timeToAnswer)
+      return
+    }
 
-    return () => clearTimeout(timer)
-  }, [timeLeft, isAnswerChecked, isActive])
+    if (isAnswerChecked) {
+      if (timerRef.current) clearInterval(timerRef.current)
+      timerRef.current = null
+      return
+    }
+
+    if (!roundStartRef.current) {
+      if (pausedTimeRef.current !== null) {
+        roundStartRef.current = Date.now() - (config.timeToAnswer - pausedTimeRef.current) * 1000
+      } else {
+        roundStartRef.current = Date.now()
+      }
+    }
+
+    timerRef.current = setInterval(() => {
+      const elapsed = (Date.now() - roundStartRef.current!) / 1000
+      const remaining = Math.max(config.timeToAnswer - elapsed, 0)
+      const rounded = Math.round(remaining * 10) / 10 // 1 miejsce po przecisku w licznku czasu (np 20.2)
+      setTimeLeft(rounded)
+
+      if (remaining <= 0) {
+        clearInterval(timerRef.current!)
+        timerRef.current = null
+        checkAnswer()
+      }
+    }, 50)
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }, [isActive, isAnswerChecked, config.timeToAnswer])
 
   const selectAnswer = (index: number) => {
-    if (isAnswerChecked) {
-      return
-    }
+    if (isAnswerChecked) return
     setSelectedAnswer(index)
   }
 
   const checkAnswer = () => {
-    if (isAnswerChecked) {
-      return
-    }
+    if (isAnswerChecked) return
 
     const is_correctAnswer = selectedAnswer === correctAnswerIndex
     setIsAnswerChecked(true)
@@ -63,6 +89,8 @@ export const useGameEngine = ({
     setSelectedAnswer(null)
     setIsAnswerChecked(false)
     setTimeLeft(config.timeToAnswer)
+    roundStartRef.current = null
+    pausedTimeRef.current = null
   }
 
   return {
