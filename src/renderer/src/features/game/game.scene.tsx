@@ -1,4 +1,4 @@
-import { type FunctionComponent, useEffect, useState } from 'react'
+import { type FunctionComponent, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import z from 'zod'
 // import { mockData } from '@renderer/constants'
@@ -24,6 +24,8 @@ export const GameScene = withDatabse(({ data }) => {
   const [rounds, setRounds] = useState<Round[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [categoriesToChoose, setCategoriesToChoose] = useState<Category[]>([])
+
+  const prevCategory = useRef<string | null>(null)
 
   const currentTeam = config.teams[roundIndex % config.teams.length]
   const currentRound = rounds[roundIndex]
@@ -73,7 +75,7 @@ export const GameScene = withDatabse(({ data }) => {
       }))
       setRounds(gens)
     }
-  }, [])
+  }, [data])
 
   /**
    * useEffect losujący kategorie do wyboru. Tyle ile podano w konfiguracji
@@ -83,10 +85,10 @@ export const GameScene = withDatabse(({ data }) => {
       return
     }
 
-    const categories = data.categories
+    const categories = data.categories.filter((c) => c.id !== prevCategory.current)
     const categoriesShuffle = toShuffled(categories)
     setCategoriesToChoose(categoriesShuffle.slice(0, config.countCategoriesToChoose))
-  }, [roundIndex, selectedCategory])
+  }, [roundIndex, selectedCategory, data])
 
   /**
    * useEffect losujący pytanie i ustawiający jaka drużyna odpowiada
@@ -108,7 +110,7 @@ export const GameScene = withDatabse(({ data }) => {
       upd[roundIndex] = { team: currentTeam, question }
       return upd
     })
-  }, [selectedCategory, currentTeam.id, roundIndex])
+  }, [selectedCategory, currentTeam.id, roundIndex, data])
 
   const { timeLeft, selectedAnswer, selectAnswer, checkAnswer, isAnswerChecked, resetRound } = game
 
@@ -159,6 +161,17 @@ export const GameScene = withDatabse(({ data }) => {
       setSelectedCategory(null)
       resetRound()
     }
+  }
+
+  const checkAnswerAndSaveCurrentQuestion = (): void => {
+    prevCategory.current = currentQuestion.category
+
+    data.questions = data.questions.filter((q) => q.id !== currentQuestion.id)
+    data.categories = data.categories.filter(
+      (c) => data.questions.some((q) => q.category === c.id) || c.id !== currentQuestion.category
+    )
+
+    checkAnswer()
   }
 
   // widok pytań, odpowiedzi, przycisków, tabeli i informacji
@@ -212,7 +225,7 @@ export const GameScene = withDatabse(({ data }) => {
         isGamePaused={isGamePaused}
         selectedAnswer={selectedAnswer}
         goToNextRound={goToNextRound}
-        checkAnswer={checkAnswer}
+        checkAnswer={checkAnswerAndSaveCurrentQuestion}
         setIsGamePaused={setIsGamePaused}
       />
     </div>
@@ -250,7 +263,13 @@ type Database = z.infer<typeof database>
 const getDatabaseAll = async () => {
   // const result = await new Promise((resolve) => resolve(mockData))
   const result = await window.api.database.all()
-  const data = database.parse(result)
+  const { categories, questions } = database.parse(result)
+
+  const data: Database = {
+    questions,
+    categories: categories.filter((c) => questions.some((q) => q.category === c.id))
+  }
+
   return data
 }
 
@@ -262,14 +281,16 @@ function withDatabse(Component: FunctionComponent<GameSceneProps>) {
   return () => {
     const { data, status } = useQuery({
       queryKey: ['database.all'],
-      queryFn: async () => await getDatabaseAll()
+      queryFn: () => getDatabaseAll(),
+      staleTime: 0,
+      gcTime: 1
     })
 
     if (status === 'error') {
       return <h1 className="p-8 text-2xl">Coś poszło nie tak przy pobieraniu danych</h1>
     }
 
-    if (status !== 'success') {
+    if (status !== 'success' || !data) {
       return null
     }
 
