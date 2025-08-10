@@ -39,7 +39,6 @@ export const GameConfigScene = () => {
   }
 
   const changeMaxRound = (value: number) => {
-    console.log('changeMaxRound', value)
     setMaxRound(Number.isNaN(value) || value === 0 ? 10 : value)
   }
 
